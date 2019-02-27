@@ -1,0 +1,122 @@
+{
+	"bool": {
+		"must": [
+			{
+				"match": {
+					"CUIs": {
+						"query": "diagnosis_CUI_EXACT",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "gene_CUI_EXACT",
+						"boost": 1
+					}
+				}
+			}
+		],
+		"should": [
+			{
+				"match": {
+					"_type": "extra"
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "demo_CUI_EXACT",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "diagnosis_CUI_EXP",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "gene_CUI_EXP",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"multi_match": {
+							"query": "surgery therapy treatment prognosis prognostic survival patient resistance recurrence targets malignancy study therapeutical outcome",
+							"fields": [
+								"Title^2",
+								"Abstract"
+							],
+							"tie_breaker": 0.3,
+							"type": "best_fields",
+							"boost": 1
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"multi_match": {
+							"query": "transcript paraffin tumorigenesis embedded formalin fish tissue probes detection screening",
+							"fields": [
+								"Title^2",
+								"Abstract"
+							],
+							"tie_breaker": 0.3,
+							"type": "best_fields",
+							"boost": -1
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C2732405 C1516638 C1516648 C4041024 C0013175 C1096776 C1519888",
+								"boost": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C2830183 C1326205 C1260954 C1512644 C1516341 C0007587",
+								"boost": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C0544452 C1277626 C2347357 C0677874 C1521726 C0457338",
+								"boost": 1
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+	
+}

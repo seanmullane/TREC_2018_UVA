@@ -1,0 +1,156 @@
+{
+	"bool": {
+		"must": [
+			{
+				"bool": {
+					"should": [				
+						{
+							"multi_match": {
+								"query": "diagnosis_TEXT",
+								"fields": [
+									"Title^2",
+									"Abstract"
+								],
+								"tie_breaker": 0.3,
+								"type": "best_fields",
+								"boost": 2
+							}
+						},
+						{
+							"match": {
+								"CUIs": {
+									"query": "diagnosis_CUI_EXACT",
+									"boost": 2
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"should": [				
+			{
+				"multi_match": {
+					"query": "gene_TEXT",
+					"fields": [
+						"Title^2",
+						"Abstract"
+					],
+					"tie_breaker": 0.3,
+					"type": "best_fields"
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "gene_CUI_EXACT",
+						"boost": 3
+					}
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "gene_CUI_EXP",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"multi_match": {
+					"query": "demographics_TEXT",
+					"fields": [
+						"Title^2",
+						"Abstract"
+					],
+					"tie_breaker": 0.3,
+					"type": "best_fields"
+				}
+			},
+			{
+				"match": {
+					"CUIs": {
+						"query": "demo_CUI_EXACT",
+						"boost": 1
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"multi_match": {
+							"query": "surgery therapy treatment prognosis prognostic survival patient resistance recurrence targets malignancy study therapeutical outcome",
+							"fields": [
+								"Title^2",
+								"Abstract"
+							],
+							"tie_breaker": 0.3,
+							"type": "best_fields",
+							"boost": 1
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C0199230 C0420019 C1578583 C1970949 C2919584 C0459959 C0796544 C0393053 C0281305 C0281185 C0677799 C0281188 C0281187 C0281478 C0281184 C0281186",
+								"boost": -1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C0011900 C0332140 C0920688 C0011905 C3669012 C1513388 C2585997",
+								"boost": -1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C2732405 C1516638 C1516648 C4041024 C0013175 C1096776 C1519888",
+								"boost": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C2830183 C1326205 C1260954 C1512644 C1516341 C0007587",
+								"boost": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"match": {
+							"CUIs": {
+								"query": "C0544452 C1277626 C2347357 C0677874 C1521726 C0457338",
+								"boost": 1
+							}
+						}
+					}
+				}
+			}
+		]
+	}	
+}

@@ -1,0 +1,91 @@
+{
+	"bool": {
+		"must": [
+			{
+				"bool": {
+					"should": [				
+						{
+							"multi_match": {
+								"query": "diagnosis_TEXT",
+								"fields": [
+									"Title^2",
+									"Abstract"
+								],
+								"tie_breaker": 0.3,
+								"type": "best_fields"
+							}
+						}
+					]
+				}
+			},
+			{
+				"bool": {
+					"should": [				
+						{
+							"multi_match": {
+								"query": "gene_TEXT",
+								"fields": [
+									"Title^2",
+									"Abstract"
+								],
+								"tie_breaker": 0.3,
+								"type": "best_fields"
+							}
+						}
+					]
+				}
+			}
+		],
+		"should": [
+			{
+				"match": {
+					"_type": "extra"
+				}
+			},
+			{
+				"multi_match": {
+					"query": "demographics_TEXT",
+					"fields": [
+						"Title^2",
+						"Abstract"
+					],
+					"tie_breaker": 0.3,
+					"type": "best_fields"
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"multi_match": {
+							"query": "surgery therapy treatment prognosis prognostic survival patient resistance recurrence targets malignancy study therapeutical outcome",
+							"fields": [
+								"Title^2",
+								"Abstract"
+							],
+							"tie_breaker": 0.3,
+							"type": "best_fields",
+							"boost": 2
+						}
+					}
+				}
+			},
+			{
+				"bool": {
+					"should": {
+						"multi_match": {
+							"query": "transcript paraffin tumorigenesis embedded formalin fish tissue probes detection screening",
+							"fields": [
+								"Title^2",
+								"Abstract"
+							],
+							"tie_breaker": 0.3,
+							"type": "best_fields",
+							"boost": -1
+						}
+					}
+				}
+			}
+		]
+	}
+	
+}

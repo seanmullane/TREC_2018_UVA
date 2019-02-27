@@ -1,0 +1,47 @@
+// Description: Commands and parameters to create a default plaintext document processing pipeline with UMLS lookup. Used for back-annotation of existing documents. This takes the top x documents not already existing in the trec.dbo.document table.
+// To use: Replace references to SQL procedures and to analysis_batch appropriate values to be used. This is called by a powershell script for multithreading purposes.
+// Author: Sean Mullane/spm9r (plus original author in ctakes project, whoever that was)
+// Created: 6/23/2017
+// Updated: 7/03/2018
+//
+//  Database Reader
+//  Read documents from a database.
+
+reader org.apache.ctakes.ytex.uima.DBCollectionReader queryGetDocumentKeys="EXECUTE TREC.Rptg.uspSrc_cTAKES_get_notes_from_batch_trec /*@pipelineCount*/ _pipelineCount_ ,/*@pipelineNumber*/ _pipelineNumber_", queryGetDocument="EXEC TREC.Rptg.uspSrc_cTAKES_single_note_trec_abstract /*@pmid*/ :instance_id", docIDName="instance_id"
+// using stored procedures for flexibility and to work around buggy regex in PiperFileReader.java
+
+//  Regex Sectionizer -- added for experiment
+//  Annotates Document Sections by detecting Section Headers using Regular Expressions provided in a Bar-Separated-Value (BSV) File.
+//   SectionsBsv  path to a BSV file containing a list of regular expressions and corresponding section types.
+add org.apache.ctakes.core.ae.BsvRegexSectionizer SectionsBsv=E:\ctakes\apache-ctakes-4.0.0\TRECSectionRegex.bsv
+add SentenceDetector
+add TokenizerAnnotatorPTB
+
+// Add non-core annotators
+add ContextDependentTokenizerAnnotator
+addDescription POSTagger
+
+// Add Chunkers
+load ChunkerSubPipe.piper
+
+// Overlap fast dictionary lookup
+add org.apache.ctakes.dictionary.lookup2.ae.OverlapJCasTermAnnotator DictionaryDescriptor=org\apache\ctakes\dictionary\lookup\fast\rxnorm_snomedct_nci_trec2018_v01.xml
+
+// Add Cleartk Entity Attribute annotators
+load AttributeCleartkSubPipe.piper
+
+// Add the old negation annotator with wider lookup window range.
+add ContextAnnotator MaxRightScopeSize=10
+
+//  SenseDisambiguatorAnnotator
+//  ! Unfamiliar SenseDisambiguatorAnnotator : Performs some Annotation task within a pipeline.  Use with care.
+//add org.apache.ctakes.ytex.uima.annotators.SenseDisambiguatorAnnotator
+
+//  Extraction Prepper
+//  Assigns IDs and Canonical text to Identified Annotations.
+add org.apache.ctakes.clinicalpipeline.ae.ExtractionPrepAnnotator AnnotationVersion=0 AnnotationVersionPropKey="theVersion"
+
+//  XMI Writer 3
+//  Writes XMI files with full representation of input text and all extracted information.
+add org.apache.ctakes.ytex.uima.annotators.DBConsumer analysisBatch="TREC_abstract_test_v01" storeDocText=false storeCAS=false insertAnnotationContainmentLinks=false typesToIgnore=org.apache.ctakes.typesystem.type.textspan.Sentence,org.apache.ctakes.typesystem.type.syntax.ContractionToken,org.apache.ctakes.typesystem.type.syntax.NewlineToken,org.apache.ctakes.typesystem.type.syntax.NumToken,org.apache.ctakes.typesystem.type.syntax.PunctuationToken,org.apache.ctakes.typesystem.type.syntax.SymbolToken,org.apache.ctakes.typesystem.type.syntax.NP,org.apache.ctakes.typesystem.type.syntax.VP,org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation,org.apache.ctakes.typesystem.type.textsem.PersonTitleAnnotation,org.apache.ctakes.typesystem.type.syntax.WordToken,org.apache.ctakes.typesystem.type.syntax.TreebankNode,org.apache.ctakes.typesystem.type.syntax.TopTreebankNode,org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode
+

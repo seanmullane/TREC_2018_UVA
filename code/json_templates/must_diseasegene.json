@@ -1,0 +1,51 @@
+{
+	"bool": {
+		"must": [
+			{
+				"bool": {
+					"should": [				
+						{
+							"multi_match": {
+								"query": QFdiagnosis,
+								"fields": [
+									"title^2",
+									"abstract"
+								],
+								"tie_breaker": 0.3,
+								"type": "best_fields"
+							}
+						},
+						{
+							"match": {
+								"CUIs": QFdiagnosisCUI 
+							}
+						}
+					]
+				}
+			},
+			{
+				"bool": {
+					"should": [				
+						{
+							"multi_match": {
+								"query": QFgene,
+								"fields": [
+									"title^2",
+									"abstract"
+								],
+								"tie_breaker": 0.3,
+								"type": "best_fields"
+							}
+						},
+						{
+							"match": {
+								"CUIs": QFgeneCUI
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+	
+}
